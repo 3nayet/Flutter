@@ -1,0 +1,637 @@
+@startuml
+set namespaceSeparator ::
+
+class "polimi::home.dart::HomePage" {
+  +_HomePageState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "polimi::home.dart::HomePage"
+
+class "polimi::home.dart::_HomePageState" {
+  +void initState()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "polimi::home.dart::_HomePageState"
+
+class "polimi::commons::custom_Text.dart::CustomText" {
+  +String msg
+  +double size
+  +Color color
+  +FontWeight weight
+  +Widget build()
+}
+
+"polimi::commons::custom_Text.dart::CustomText" o-- "dart::ui::Color"
+"polimi::commons::custom_Text.dart::CustomText" o-- "dart::ui::FontWeight"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "polimi::commons::custom_Text.dart::CustomText"
+
+class "polimi::commons::common.dart::Common" {
+  {static} +void changeScreen()
+  {static} +void changeScreenWithReplacement()
+}
+
+class "polimi::providers::userProvider.dart::Status" {
+  +int index
+  {static} +List<Status> values
+  {static} +Status Uninitialized
+  {static} +Status Authenticated
+  {static} +Status Authenticating
+  {static} +Status Unauthenticated
+}
+
+"polimi::providers::userProvider.dart::Status" o-- "polimi::providers::userProvider.dart::Status"
+
+class "polimi::providers::userProvider.dart::UserProvider" {
+  -FirebaseAuth _auth
+  -FirebaseUser _user
+  -Status _status
+  -Firestore _firestore
+  -UserServices _userServices
+  -CardServices _cardServices
+  -PurchaseServices _purchaseServices
+  -FavoriteProducts _favoriteProductsService
+  -UserModel _userModel
+  +List<CardModel> cards
+  +List<PurchaseModel> purchaseHistory
+  -List _favoriteProducts
+  +Status status
+  +FirebaseUser user
+  +List favoriteProducts
+  +UserModel userModel
+  +Future loadCardsAndPurchase()
+  +Future signIn()
+  +Future handleSigninWtihGoogle()
+  +Future signUp()
+  +Future signOut()
+  +Future addFavorite()
+  -Future _onStateChanged()
+}
+
+"polimi::providers::userProvider.dart::UserProvider" o-- "firebase_auth::firebase_auth.dart::FirebaseAuth"
+"polimi::providers::userProvider.dart::UserProvider" o-- "firebase_auth::firebase_auth.dart::FirebaseUser"
+"polimi::providers::userProvider.dart::UserProvider" o-- "polimi::providers::userProvider.dart::Status"
+"polimi::providers::userProvider.dart::UserProvider" o-- "cloud_firestore::cloud_firestore.dart::Firestore"
+"polimi::providers::userProvider.dart::UserProvider" o-- "polimi::db::user.dart::UserServices"
+"polimi::providers::userProvider.dart::UserProvider" o-- "polimi::db::card.dart::CardServices"
+"polimi::providers::userProvider.dart::UserProvider" o-- "polimi::db::purchase.dart::PurchaseServices"
+"polimi::providers::userProvider.dart::UserProvider" o-- "polimi::db::favoriteProducts.dart::FavoriteProducts"
+"polimi::providers::userProvider.dart::UserProvider" o-- "polimi::models::user.dart::UserModel"
+"flutter::src::foundation::change_notifier.dart::ChangeNotifier" <|-- "polimi::providers::userProvider.dart::UserProvider"
+
+class "polimi::providers::cartItemProvider.dart::CartProvider" {
+  -List<CartItem> _cartItems
+  +String userId
+  +List<CartItem> cartItems
+  +dynamic addCartItem()
+  +dynamic updateCartItem()
+  -dynamic _getDBCartItems()
+  +dynamic removeCartItem()
+  +void dispose()
+}
+
+"flutter::src::foundation::change_notifier.dart::ChangeNotifier" <|-- "polimi::providers::cartItemProvider.dart::CartProvider"
+
+class "polimi::models::product.dart::Product" {
+  {static} +String ID
+  {static} +String CATEGORY
+  {static} +String NAME
+  {static} +String PRICE
+  {static} +String BRAND
+  {static} +String COLORS
+  {static} +String QUANTITY
+  {static} +String SIZES
+  {static} +String SALE
+  {static} +String FEATURED
+  {static} +String PICTURE
+  +String id
+  +String name
+  +String brand
+  +String category
+  +String picture
+  +double price
+  +int quantity
+  +List colors
+  +List sizes
+  +List similarProducts
+  +bool onSale
+  +bool featured
+  +String toString()
+}
+
+class "polimi::models::purchase.dart::PurchaseModel" {
+  {static} +String ID
+  {static} +String PRODUCTS
+  {static} +String AMOUNT
+  {static} +String USER_ID
+  {static} +String DATE
+  {static} +String CARD_ID
+  -String _id
+  -List<CartItem> _products
+  -String _userId
+  -String _date
+  -String _cardId
+  -int _amount
+  +String id
+  +List<CartItem> products
+  +String userId
+  +String date
+  +String cardId
+  +int amount
+  +Map toMap()
+}
+
+class "polimi::models::user.dart::UserModel" {
+  {static} +String NAME
+  {static} +String EMAIL
+  {static} +String ID
+  {static} +String GENDER
+  -String _name
+  -String _email
+  -String _id
+  -String _gender
+  +String gender
+  +String name
+  +String email
+  +String id
+  +Map toMap()
+}
+
+class "polimi::models::card.dart::CardModel" {
+  {static} +String ID
+  {static} +String USER_ID
+  {static} +String CARD_NUMBER
+  {static} +String EXP_DATE
+  {static} +String CARD_HOLDER_NAME
+  {static} +String CVV_CODE
+  {static} +String SHOW_BACK
+  +String id
+  +String userId
+  +String cardNumber
+  +String expiryDate
+  +String cardHolderName
+  +String cvvCode
+  +bool showBackView
+  +Map toMap()
+}
+
+class "polimi::models::category.dart::Category" {
+  +String id
+  +String name
+  +String picture
+}
+
+class "polimi::models::cartItem.dart::CartItem" {
+  +String id
+  +String name
+  +int qty
+  +double price
+  +String color
+  +String size
+  +String picture
+  +String brand
+  +String category
+  +String cartItemToJson()
+  +CartItem cartItemFromJson()
+  +Map toMap()
+}
+
+class "polimi::models::stripe_transaction_response.dart::StripeTransactionResponse" {
+  +String message
+  +bool success
+}
+
+class "polimi::models::cardDocument.dart::CardDocument" {
+  +List<CardModel> cards
+}
+
+class "polimi::main.dart::ScreensController" {
+  +_ScreensControllerState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "polimi::main.dart::ScreensController"
+
+class "polimi::main.dart::_ScreensControllerState" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "polimi::main.dart::_ScreensControllerState"
+
+class "polimi::components::recent_bought.dart::RecenetProducts" {
+  +_RecenetProductsState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "polimi::components::recent_bought.dart::RecenetProducts"
+
+class "polimi::components::recent_bought.dart::_RecenetProductsState" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "polimi::components::recent_bought.dart::_RecenetProductsState"
+
+class "polimi::components::recent_bought.dart::ProductCard" {
+  +Product product
+  +Widget build()
+}
+
+"polimi::components::recent_bought.dart::ProductCard" o-- "polimi::models::product.dart::Product"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "polimi::components::recent_bought.dart::ProductCard"
+
+class "polimi::components::HorizentalCategoryList.dart::HorizentalCategoryList" {
+  -CategoriesDBService _service
+  +Widget build()
+}
+
+"polimi::components::HorizentalCategoryList.dart::HorizentalCategoryList" o-- "polimi::db::categories.dart::CategoriesDBService"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "polimi::components::HorizentalCategoryList.dart::HorizentalCategoryList"
+
+class "polimi::components::HorizentalCategoryList.dart::CategoryViewer" {
+  +Category category
+  +Widget build()
+}
+
+"polimi::components::HorizentalCategoryList.dart::CategoryViewer" o-- "polimi::models::category.dart::Category"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "polimi::components::HorizentalCategoryList.dart::CategoryViewer"
+
+class "polimi::components::featuredProducts.dart::FeaturedProducts" {
+  +_FeaturedProductsState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "polimi::components::featuredProducts.dart::FeaturedProducts"
+
+class "polimi::components::featuredProducts.dart::_FeaturedProductsState" {
+  -ProductsDBService _service
+  +Widget build()
+}
+
+"polimi::components::featuredProducts.dart::_FeaturedProductsState" o-- "polimi::db::products.dart::ProductsDBService"
+"flutter::src::widgets::framework.dart::State<T>" <|-- "polimi::components::featuredProducts.dart::_FeaturedProductsState"
+
+class "polimi::components::featutedCard.dart::FeaturedCard" {
+  +Product product
+  +Widget build()
+}
+
+"polimi::components::featutedCard.dart::FeaturedCard" o-- "polimi::models::product.dart::Product"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "polimi::components::featutedCard.dart::FeaturedCard"
+
+class "polimi::components::cart_products.dart::Cart_Products" {
+  +_Cart_ProductsState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "polimi::components::cart_products.dart::Cart_Products"
+
+class "polimi::components::cart_products.dart::_Cart_ProductsState" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "polimi::components::cart_products.dart::_Cart_ProductsState"
+
+class "polimi::components::cart_products.dart::Cart_Product" {
+  +CartItem cartItem
+  +_Cart_ProductState createState()
+}
+
+"polimi::components::cart_products.dart::Cart_Product" o-- "polimi::models::cartItem.dart::CartItem"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "polimi::components::cart_products.dart::Cart_Product"
+
+class "polimi::components::cart_products.dart::_Cart_ProductState" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "polimi::components::cart_products.dart::_Cart_ProductState"
+
+class "polimi::components::similar_product.dart::SimilarProduct" {
+  +List similarProducts
+  +_SimilarProductState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "polimi::components::similar_product.dart::SimilarProduct"
+
+class "polimi::components::similar_product.dart::_SimilarProductState" {
+  -ProductsDBService _service
+  +Widget build()
+}
+
+"polimi::components::similar_product.dart::_SimilarProductState" o-- "polimi::db::products.dart::ProductsDBService"
+"flutter::src::widgets::framework.dart::State<T>" <|-- "polimi::components::similar_product.dart::_SimilarProductState"
+
+class "polimi::components::similar_product.dart::Similar_Product" {
+  +Product product
+  +Widget build()
+}
+
+"polimi::components::similar_product.dart::Similar_Product" o-- "polimi::models::product.dart::Product"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "polimi::components::similar_product.dart::Similar_Product"
+
+class "polimi::components::loading.dart::Loading" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "polimi::components::loading.dart::Loading"
+
+class "polimi::db::dbProvider.dart::DBProvider" {
+  {static} +DBProvider db
+  {static} -Database _database
+  +Future<Database> database
+  +dynamic initDB()
+  -dynamic _onUpgrade()
+  -dynamic _onCreate()
+  +dynamic newCartItem()
+  +dynamic getCartItem()
+  +dynamic getAllCartItems()
+  +dynamic deleteCartItems()
+  +dynamic insertCartItems()
+}
+
+"polimi::db::dbProvider.dart::DBProvider" o-- "polimi::db::dbProvider.dart::DBProvider"
+"polimi::db::dbProvider.dart::DBProvider" o-- "sqflite_common::sqlite_api.dart::Database"
+
+class "polimi::db::purchase.dart::PurchaseServices" {
+  {static} +String USER_ID
+  +String collection
+  -Firestore _firestore
+  +void createPurchase()
+  +Future getPurchaseHistory()
+}
+
+"polimi::db::purchase.dart::PurchaseServices" o-- "cloud_firestore::cloud_firestore.dart::Firestore"
+
+class "polimi::db::user.dart::UserServices" {
+  +String collection
+  -Firestore _firestore
+  +void createUser()
+  +void updateDetails()
+  +Future getUserById()
+}
+
+"polimi::db::user.dart::UserServices" o-- "cloud_firestore::cloud_firestore.dart::Firestore"
+
+class "polimi::db::card.dart::CardServices" {
+  {static} +String USER_ID
+  +String collection
+  -Firestore _firestore
+  +Future createCard()
+  +Future updateDetails()
+  +void deleteCard()
+  +Future getCards()
+}
+
+"polimi::db::card.dart::CardServices" o-- "cloud_firestore::cloud_firestore.dart::Firestore"
+
+class "polimi::db::products.dart::ProductsDBService" {
+  +String collection
+  +Future getFeaturedProducts()
+  +Future getProducstById()
+  +Future getProductsOfCategory()
+}
+
+"flutter::src::foundation::change_notifier.dart::ChangeNotifier" <|-- "polimi::db::products.dart::ProductsDBService"
+
+class "polimi::db::favoriteProducts.dart::FavoriteProducts" {
+  +Firestore db
+  +String collection
+  +void createFavorite()
+  +Future getfavoriteProducts()
+}
+
+"polimi::db::favoriteProducts.dart::FavoriteProducts" o-- "cloud_firestore::cloud_firestore.dart::Firestore"
+
+class "polimi::db::categories.dart::CategoriesDBService" {
+  +String collection
+  +Future getCategories()
+}
+
+"flutter::src::foundation::change_notifier.dart::ChangeNotifier" <|-- "polimi::db::categories.dart::CategoriesDBService"
+
+class "polimi::pages::purchase_history.dart::Purchases" {
+  +_PurchasesState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "polimi::pages::purchase_history.dart::Purchases"
+
+class "polimi::pages::purchase_history.dart::_PurchasesState" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "polimi::pages::purchase_history.dart::_PurchasesState"
+
+class "polimi::pages::purchase_history.dart::PurchaseViewer" {
+  +PurchaseModel purchase
+  +_PurchaseViewerState createState()
+}
+
+"polimi::pages::purchase_history.dart::PurchaseViewer" o-- "polimi::models::purchase.dart::PurchaseModel"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "polimi::pages::purchase_history.dart::PurchaseViewer"
+
+class "polimi::pages::purchase_history.dart::_PurchaseViewerState" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "polimi::pages::purchase_history.dart::_PurchaseViewerState"
+
+class "polimi::pages::manage_card.dart::ManagaCardsScreen" {
+  +_ManagaCardsScreenState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "polimi::pages::manage_card.dart::ManagaCardsScreen"
+
+class "polimi::pages::manage_card.dart::_ManagaCardsScreenState" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "polimi::pages::manage_card.dart::_ManagaCardsScreenState"
+
+class "polimi::pages::existing_cards.dart::ExistingCardsPage" {
+  +List<CartItem> products
+  +List<CardModel> cards
+  +String user
+  +ExistingCardsPageState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "polimi::pages::existing_cards.dart::ExistingCardsPage"
+
+class "polimi::pages::existing_cards.dart::ExistingCardsPageState" {
+  +dynamic payViaExistingCard()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "polimi::pages::existing_cards.dart::ExistingCardsPageState"
+
+class "polimi::pages::login.dart::LoginPage" {
+  +_LoginPageState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "polimi::pages::login.dart::LoginPage"
+
+class "polimi::pages::login.dart::_LoginPageState" {
+  +bool isLoading
+  +bool isSignedIn
+  -GlobalKey<FormState> _formKey
+  -GlobalKey<ScaffoldState> _key
+  -TextEditingController _email
+  -TextEditingController _password
+  +void initState()
+  +Widget build()
+}
+
+"polimi::pages::login.dart::_LoginPageState" o-- "flutter::src::widgets::framework.dart::GlobalKey<FormState>"
+"polimi::pages::login.dart::_LoginPageState" o-- "flutter::src::widgets::framework.dart::GlobalKey<ScaffoldState>"
+"polimi::pages::login.dart::_LoginPageState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"flutter::src::widgets::framework.dart::State<T>" <|-- "polimi::pages::login.dart::_LoginPageState"
+
+class "polimi::pages::splash.dart::Splash" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "polimi::pages::splash.dart::Splash"
+
+class "polimi::pages::productsforCategory.dart::ProductsforCategory" {
+  +String category
+  +_ProductsforCategoryState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "polimi::pages::productsforCategory.dart::ProductsforCategory"
+
+class "polimi::pages::productsforCategory.dart::_ProductsforCategoryState" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "polimi::pages::productsforCategory.dart::_ProductsforCategoryState"
+
+class "polimi::pages::checkout.dart::CheckOut" {
+  +List<CartItem> products
+  +List<CardModel> cards
+  +String userId
+  +CheckOutState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "polimi::pages::checkout.dart::CheckOut"
+
+class "polimi::pages::checkout.dart::CheckOutState" {
+  +dynamic onItemPress()
+  +dynamic payViaNewCard()
+  +dynamic payViaExistingCard()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "polimi::pages::checkout.dart::CheckOutState"
+
+class "polimi::pages::product_details.dart::ProductDetail" {
+  +Product product
+  +String user
+  +_ProductDetailState createState()
+}
+
+"polimi::pages::product_details.dart::ProductDetail" o-- "polimi::models::product.dart::Product"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "polimi::pages::product_details.dart::ProductDetail"
+
+class "polimi::pages::product_details.dart::_ProductDetailState" {
+  +String selectedColor
+  +String selectedSize
+  +int selectedQTY
+  +Uuid uuid
+  +Widget build()
+  +Color getColor()
+}
+
+"polimi::pages::product_details.dart::_ProductDetailState" o-- "uuid::uuid.dart::Uuid"
+"flutter::src::widgets::framework.dart::State<T>" <|-- "polimi::pages::product_details.dart::_ProductDetailState"
+
+class "polimi::pages::successfull_purchase.dart::Success" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "polimi::pages::successfull_purchase.dart::Success"
+
+class "polimi::pages::signup.dart::SignUp" {
+  +_SignUpState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "polimi::pages::signup.dart::SignUp"
+
+class "polimi::pages::signup.dart::_SignUpState" {
+  +bool isLoading
+  -GlobalKey<FormState> _formKey
+  -GlobalKey<ScaffoldState> _Key
+  -TextEditingController _email
+  -TextEditingController _password
+  -TextEditingController _confirm_password
+  -TextEditingController _full_name
+  -String _gender
+  +String groupValue
+  -UserServices _services
+  +Widget build()
+  +dynamic groupvalueChanged()
+}
+
+"polimi::pages::signup.dart::_SignUpState" o-- "flutter::src::widgets::framework.dart::GlobalKey<FormState>"
+"polimi::pages::signup.dart::_SignUpState" o-- "flutter::src::widgets::framework.dart::GlobalKey<ScaffoldState>"
+"polimi::pages::signup.dart::_SignUpState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"polimi::pages::signup.dart::_SignUpState" o-- "polimi::db::user.dart::UserServices"
+"flutter::src::widgets::framework.dart::State<T>" <|-- "polimi::pages::signup.dart::_SignUpState"
+
+class "polimi::pages::favorite_products.dart::FavoriteProducts" {
+  +_FavoriteProductsState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "polimi::pages::favorite_products.dart::FavoriteProducts"
+
+class "polimi::pages::favorite_products.dart::_FavoriteProductsState" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "polimi::pages::favorite_products.dart::_FavoriteProductsState"
+
+class "polimi::pages::cart.dart::Cart" {
+  +_CartState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "polimi::pages::cart.dart::Cart"
+
+class "polimi::pages::cart.dart::_CartState" {
+  -GlobalKey<ScaffoldState> _scaffoldKey
+  +double total
+  +Widget build()
+  -dynamic _displaySnackBar()
+}
+
+"polimi::pages::cart.dart::_CartState" o-- "flutter::src::widgets::framework.dart::GlobalKey<ScaffoldState>"
+"flutter::src::widgets::framework.dart::State<T>" <|-- "polimi::pages::cart.dart::_CartState"
+
+class "polimi::pages::credit_card.dart::CreditCard" {
+  +String title
+  +_CreditCardState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "polimi::pages::credit_card.dart::CreditCard"
+
+class "polimi::pages::credit_card.dart::_CreditCardState" {
+  +String cardNumber
+  +String expiryDate
+  +String cardHolderName
+  +String cvvCode
+  +bool isCvvFocused
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "polimi::pages::credit_card.dart::_CreditCardState"
+
+class "polimi::services::payment_service.dart::StripeService" {
+  {static} +String apiBase
+  {static} +String paymentApiUrl
+  {static} +String CUSTOMERS_URL
+  {static} +String PAYMENT_METHOD_URL
+  {static} +String secret
+  {static} +Map<String, String> headers
+  {static} +dynamic init()
+  {static} +Future payViaExistingCard()
+  {static} +Future payWithNewCard()
+  {static} +dynamic getPlatformExceptionErrorResult()
+  {static} +Future createPaymentIntent()
+  +Future createStripeCustomer()
+  +Future addCard()
+}
+
+
+@enduml
